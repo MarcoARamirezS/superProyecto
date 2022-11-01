@@ -2,7 +2,7 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 import stripe from 'stripe'
 import { initializeApp } from 'firebase/app'
-import { collection, getDoc, getFirestore } from 'firebase/firestore'
+import { getFirestore, doc, collection, setDoc, getDoc } from 'firebase/firestore'
 
 //Configuración de Firebase
 const firebaseConfig = {
@@ -57,10 +57,60 @@ app.post('/signup', (req, res) => {
         res.json({ 'alert': 'email already exists'})
       } else {
         // encriptar password
+        bcrypt.genSalt(10, (err, hash) => {
+          req.body.password = hash
+          req.body.seller = false
+          setDoc(doc(users, email), req.body).then(data =>{
+            res.json({
+              name: req.body.name,
+              email: req.body.email,
+              seller: req.body.seller
+            })
+          })
+        })
       }
     })
   }
 })
+
+// Ruta login
+app.get('/login', (req, res) => {
+  res.sendFile('login.html', { root: 'public'})
+})
+
+app.post('/login', (req, res) => {
+  let { email, password } = req.body
+
+  if( !email.length || !password.length){
+    return res.json({
+      'alert': 'fill all the inputs'
+    })
+  }
+  const users = collection(db, 'users')
+  getDoc(doc(users, email))
+    .then( user => {
+      if(!user.exists()){
+        return res.json({
+          'alert': 'email doesnt exists'
+        })
+      } else {
+        bcrypt.compare(password, user.data().password, (err, result) => {
+          if(result){
+            let data = user.data()
+            return res.json({
+              name: data.name,
+              email: data.email,
+              seller: data.seller
+            })
+          } else {
+            return res.json({'alert': 'password incorrect'})
+          }
+        })
+      }
+    })
+})
+
+
 
 app.listen(3000, () => {
 	console.log('Servidor en Ejecución...')
