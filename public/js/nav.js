@@ -42,7 +42,7 @@ const createNavbar = () => {
 				<img src="./img/user.png" class="user-icon">
 				<div class="user-icon-popup">
 					<p>Login to your account</p>
-					<a>login</a>
+					<a href="/login">login</a>
 				</div>
 			</div>
 		</div>
