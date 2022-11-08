@@ -2,7 +2,7 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 import stripe from 'stripe'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, doc, collection, setDoc, getDoc } from 'firebase/firestore'
+import { getFirestore, doc, collection, setDoc, getDoc, updateDoc } from 'firebase/firestore'
 
 //Configuración de Firebase
 const firebaseConfig = {
@@ -57,14 +57,16 @@ app.post('/signup', (req, res) => {
         res.json({ 'alert': 'email already exists'})
       } else {
         // encriptar password
-        bcrypt.genSalt(10, (err, hash) => {
-          req.body.password = hash
-          req.body.seller = false
-          setDoc(doc(users, email), req.body).then(data =>{
-            res.json({
-              name: req.body.name,
-              email: req.body.email,
-              seller: req.body.seller
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(password, salt, (err, hash) => {
+            req.body.password = hash
+            req.body.seller = false
+            setDoc(doc(users, email), req.body).then(data =>{
+              res.json({
+                name: req.body.name,
+                email: req.body.email,
+                seller: req.body.seller
+              })
             })
           })
         })
@@ -80,6 +82,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   let { email, password } = req.body
+  console.log('login', email, password)
 
   if( !email.length || !password.length){
     return res.json({
@@ -94,6 +97,7 @@ app.post('/login', (req, res) => {
           'alert': 'email doesnt exists'
         })
       } else {
+        console.log('bd', user.data().password)
         bcrypt.compare(password, user.data().password, (err, result) => {
           if(result){
             let data = user.data()
@@ -108,6 +112,38 @@ app.post('/login', (req, res) => {
         })
       }
     })
+})
+
+// Ruta Seller
+app.get('/seller', (req, res) => {
+  res.sendFile('seller.html', { root: 'public'})
+})
+
+app.post('/seller', (req, res) => {
+  let { name, address, about, number, email } = req.body
+
+  if(!name.length || !address.length 
+    || !about.length || number.length < 10
+    || !Number(number)){
+      return res.json({
+        'alert': 'something was wrong'
+      })
+    } else {
+      // update seller
+      const sellers = collection(db, "sellers")
+      setDoc(doc(sellers, email), req.body)
+        .then(data => {
+          const users = collection(db, "users")
+          updateDoc(doc(users, email), {
+            seller: true
+          })
+          .then( data => {
+            res.json({
+              'seller': true
+            })
+          })
+        })
+    }
 })
 
 
