@@ -1,3 +1,4 @@
+let user = JSON.parse(sessionStorage.user || null)
 const navbar = document.querySelector('.navbar')
 
 window.addEventListener('scroll', () => {
@@ -11,42 +12,125 @@ window.addEventListener('scroll', () => {
 })
 
 const createNavbar = () => {
-  navbar.innerHTML += 
-  `
-		<ul class="links-container">
-			<li class="link-item">
-				<a href="#" class="link active">home</a>
-			</li>
-			<li class="link-item">
-				<a href="#" class="link">Product</a>
-			</li>
-			<li class="link-item">
-				<a href="#" class="link">about</a>
-			</li>
-			<li class="link-item">
-				<a href="#" class="link">contact</a>
-			</li>
-		</ul>
-		<div class="user-interactions">
-			<div class="search-box">
-				<input type="text" class="search" placeholder="search item">
-				<button class="search-btn">
-					<img src="./img/search.png" alt="" class="cart-icon">
-				</button>
-			</div>
-			<div class="cart" onclick="location.href = '/cart'">
-				<img src="./img/cart.png" class="cart-icon">
-				<span class="cart-item-count">00</span>
-			</div>
-			<div class="user">
-				<img src="./img/user.png" class="user-icon">
-				<div class="user-icon-popup">
-					<p>Login to your account</p>
-					<a href="/login">login</a>
+	if(user && user.seller) {
+		navbar.innerHTML += 
+		`
+			<ul class="links-container">
+				<li class="link-item">
+					<a href="#" class="link active">home</a>
+				</li>
+				<li class="link-item">
+					<a href="#" class="link">Product</a>
+				</li>
+				<li class="link-item">
+					<a href="#" class="link">about</a>
+				</li>
+				<li class="link-item">
+					<a href="#" class="link">contact</a>
+				</li>
+				<li class="link-item">
+					<a href="/dashboard" class="link">dashboard</a>
+				</li>
+			</ul>
+			<div class="user-interactions">
+				<div class="search-box">
+					<input type="text" class="search" placeholder="search item">
+					<button class="search-btn">
+						<img src="./img/search.png" alt="" class="cart-icon">
+					</button>
+				</div>
+				<div class="cart" onclick="location.href = '/cart'">
+					<img src="./img/cart.png" class="cart-icon">
+					<span class="cart-item-count">00</span>
+				</div>
+				<div class="user">
+					<img src="./img/user.png" class="user-icon">
+					<div class="user-icon-popup">
+						<p>Login to your account</p>
+						<a href="/login">login</a>
+					</div>
 				</div>
 			</div>
-		</div>
-  `
+		`
+	} else if(user) {
+		navbar.innerHTML += 
+			`
+				<ul class="links-container">
+					<li class="link-item">
+						<a href="#" class="link active">home</a>
+					</li>
+					<li class="link-item">
+						<a href="#" class="link">Product</a>
+					</li>
+					<li class="link-item">
+						<a href="#" class="link">about</a>
+					</li>
+					<li class="link-item">
+						<a href="#" class="link">contact</a>
+					</li>
+					<li class="link-item">
+						<a href="/seller" class="link">seller</a>
+					</li>
+				</ul>
+				<div class="user-interactions">
+					<div class="search-box">
+						<input type="text" class="search" placeholder="search item">
+						<button class="search-btn">
+							<img src="./img/search.png" alt="" class="cart-icon">
+						</button>
+					</div>
+					<div class="cart" onclick="location.href = '/cart'">
+						<img src="./img/cart.png" class="cart-icon">
+						<span class="cart-item-count">00</span>
+					</div>
+					<div class="user">
+						<img src="./img/user.png" class="user-icon">
+						<div class="user-icon-popup">
+							<p>Login to your account</p>
+							<a href="/login">login</a>
+						</div>
+					</div>
+				</div>
+			`
+	} else {
+		navbar.innerHTML += 
+			`
+				<ul class="links-container">
+					<li class="link-item">
+						<a href="#" class="link active">home</a>
+					</li>
+					<li class="link-item">
+						<a href="#" class="link">Product</a>
+					</li>
+					<li class="link-item">
+						<a href="#" class="link">about</a>
+					</li>
+					<li class="link-item">
+						<a href="#" class="link">contact</a>
+					</li>
+				</ul>
+				<div class="user-interactions">
+					<div class="search-box">
+						<input type="text" class="search" placeholder="search item">
+						<button class="search-btn">
+							<img src="./img/search.png" alt="" class="cart-icon">
+						</button>
+					</div>
+					<div class="cart" onclick="location.href = '/cart'">
+						<img src="./img/cart.png" class="cart-icon">
+						<span class="cart-item-count">00</span>
+					</div>
+					<div class="user">
+						<img src="./img/user.png" class="user-icon">
+						<div class="user-icon-popup">
+							<p>Login to your account</p>
+							<a href="/login">login</a>
+						</div>
+					</div>
+				</div>
+			`
+	}
+	
 }
 
 createNavbar()
@@ -61,7 +145,6 @@ userIcon.addEventListener('click', () => {
 
 let text = userPopupIcon.querySelector('p')
 let actionBtn = userPopupIcon.querySelector('a')
-let user = JSON.parse(sessionStorage.user || null)
 
 if(user != null){
 	text.innerHTML = `log in as, ${user.name}`
