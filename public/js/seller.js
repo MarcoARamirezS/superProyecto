@@ -10,7 +10,8 @@ window.onload = () => {
 let loader = document.querySelector('.loader')
 let applyBtn = document.querySelector('.apply-btn')
 
-applyBtn.addEventListener('click', () => {
+applyBtn.addEventListener('click', async () => {
+    console.log('click')
     let businessName = document.querySelector('#name').value
     let address = document.querySelector('#address').value
     let about = document.querySelector('#about').value
@@ -23,12 +24,16 @@ applyBtn.addEventListener('click', () => {
         } else {
             // enviar datos
             loader.style.display = 'block'
-            sendData('seller', {
+            await sendData('seller', {
                 name: businessName,
                 address,
                 about,
                 number,
                 email: JSON.parse(sessionStorage.user).email
             })
+            const Usuario = JSON.parse(sessionStorage.getItem('user'))
+            Usuario.seller = true
+            sessionStorage.setItem('user', JSON.stringify(Usuario));
+            location.replace('/')
         }
 })
